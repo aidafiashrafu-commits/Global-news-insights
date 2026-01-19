@@ -1,0 +1,18 @@
+/*
+Theme Name: Global News Insights
+Theme URI: https://example.com/global-news-insights
+Author: Global News Insights
+Author URI: mailto:lingendea@gmail.com
+Description: A professional, responsive news theme inspired by modern news sites. Clean, accessible, and optimized for performance and SEO.
+Version: 1.0.0
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: global-news-insights
+Tags: news, magazine, responsive, translation-ready, accessibility-ready
+*/
+
+/* Main theme stylesheet */
+@import url('assets/css/style.css');
+
+/* Additional small overrides */
+html, body { height:100%; }
