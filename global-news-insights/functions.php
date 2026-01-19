@@ -43,9 +43,35 @@ function gni_scripts() {
 
     wp_enqueue_script( 'gni-main', get_template_directory_uri() . '/assets/js/main.js', array( 'jquery' ), GNI_VERSION, true );
     wp_enqueue_script( 'gni-whatsapp', get_template_directory_uri() . '/assets/js/whatsapp.js', array(), GNI_VERSION, true );
-    wp_localize_script( 'gni-main', 'gni_vars', array( 'ajax_url' => admin_url( 'admin-ajax.php' ) ) );
+    wp_localize_script( 'gni-main', 'gni_vars', array( 'ajax_url' => admin_url( 'admin-ajax.php' ), 'subscribe_nonce' => wp_create_nonce( 'gni_subscribe_nonce' ) ) );
 }
 add_action( 'wp_enqueue_scripts', 'gni_scripts' );
+
+// Editor styles for Gutenberg
+function gni_block_editor_assets() {
+    wp_enqueue_style( 'gni-editor-style', get_template_directory_uri() . '/assets/css/editor-style.css', array(), GNI_VERSION );
+}
+add_action( 'enqueue_block_editor_assets', 'gni_block_editor_assets' );
+
+// Newsletter subscribe AJAX handler
+function gni_subscribe() {
+    check_ajax_referer( 'gni_subscribe_nonce', 'nonce' );
+    $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+    if ( ! is_email( $email ) ) {
+        wp_send_json_error( array( 'message' => 'Invalid email' ) );
+    }
+    $subs = get_option( 'gni_subscribers', array() );
+    if ( in_array( $email, $subs, true ) ) {
+        wp_send_json_success( array( 'message' => 'Already subscribed' ) );
+    }
+    $subs[] = $email;
+    update_option( 'gni_subscribers', $subs );
+    // Optional: send admin notice
+    wp_mail( get_option( 'admin_email' ), 'New subscriber', 'New newsletter subscriber: ' . $email );
+    wp_send_json_success( array( 'message' => 'Subscribed' ) );
+}
+add_action( 'wp_ajax_gni_subscribe', 'gni_subscribe' );
+add_action( 'wp_ajax_nopriv_gni_subscribe', 'gni_subscribe' );
 
 // Register widget areas
 function gni_widgets_init() {
