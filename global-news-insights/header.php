@@ -19,7 +19,9 @@
                 </a>
             </div>
             <div class="header-right">
-                <?php if ( is_active_sidebar( 'header-ads' ) ) : dynamic_sidebar( 'header-ads' ); endif; ?>
+                <?php if ( is_active_sidebar( 'header-ads' ) ) : dynamic_sidebar( 'header-ads' ); else : ?>
+                    <div class="ad-slot">Header ad slot (widget area) - paste AdSense code here</div>
+                <?php endif; ?>
             </div>
         </div>
 

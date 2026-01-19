@@ -20,6 +20,11 @@ get_header();
         <?php endwhile; wp_reset_postdata(); endif; ?>
     </section>
 
+    <!-- Header ad slot under hero -->
+    <div class="container">
+        <div class="ad-slot ad-hero">Ad slot (hero/header) - paste AdSense code here</div>
+    </div>
+
     <section class="latest">
         <h2>Latest News</h2>
         <div class="grid">

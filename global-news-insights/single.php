@@ -15,6 +15,9 @@
 
             <div class="article-content" itemprop="articleBody">
                 <?php the_content(); ?>
+
+                <!-- In-article Ad slot (replace with your AdSense code) -->
+                <div class="ad-slot ad-inline" aria-hidden="true">Ad slot (in-article) - paste AdSense code here</div>
             </div>
 
             <div class="article-share">

@@ -31,3 +31,15 @@ Notes on monetization and SEO:
 
 - Ad slots are added as placeholders; insert your Google AdSense code into the relevant template locations.
 - Schema.org JSON-LD is emitted in `single.php`.
+Ad slot locations and instructions:
+
+- Header: replace the contents of the `header-ads` widget or the placeholder in `header.php`.
+- Hero/header (front page): `front-page.php` contains an `ad-hero` placeholder below the hero article.
+- Sidebar: `sidebar.php` includes a `.ad-slot` placeholder labeled "Ad slot (sidebar)".
+- Inside articles: `single.php` includes an in-article ad placeholder after the article content.
+- Footer: add your ad code into the `footer-1` widget area.
+
+Security & privacy note:
+
+- Do not hard-code publisher credentials in theme files. Insert AdSense scripts via Widgets or the Customizer where possible.
+- Follow Google AdSense program policies when placing ads.
