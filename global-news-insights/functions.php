@@ -9,7 +9,11 @@ if ( ! defined( 'GNI_VERSION' ) ) {
     define( 'GNI_VERSION', '1.0.0' );
 }
 
-// Set up theme
+/**
+ * Set up theme: add theme supports, register menus, load text domain
+ *
+ * @return void
+ */
 function gni_setup() {
     load_theme_textdomain( 'global-news-insights', get_template_directory() . '/languages' );
 
@@ -35,7 +39,12 @@ function gni_setup() {
 }
 add_action( 'after_setup_theme', 'gni_setup' );
 
-// Enqueue styles and scripts
+/**
+ * Enqueue theme styles and scripts
+ * Loads Google Fonts, main CSS, and JS for interactivity and AJAX
+ *
+ * @return void
+ */
 function gni_scripts() {
     wp_enqueue_style( 'gni-google-fonts', 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap', array(), null );
     wp_enqueue_style( 'gni-style', get_stylesheet_uri(), array(), GNI_VERSION );
@@ -53,7 +62,12 @@ function gni_block_editor_assets() {
 }
 add_action( 'enqueue_block_editor_assets', 'gni_block_editor_assets' );
 
-// Newsletter subscribe AJAX handler
+/**
+ * Handle newsletter subscription via AJAX
+ * Validates email, stores in options, sends admin notification
+ *
+ * @return void Outputs JSON response (success/error)
+ */
 function gni_subscribe() {
     check_ajax_referer( 'gni_subscribe_nonce', 'nonce' );
     $email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
@@ -73,7 +87,12 @@ function gni_subscribe() {
 add_action( 'wp_ajax_gni_subscribe', 'gni_subscribe' );
 add_action( 'wp_ajax_nopriv_gni_subscribe', 'gni_subscribe' );
 
-// Register widget areas
+/**
+ * Register widget areas (sidebars) for dynamic content
+ * Areas: Sidebar-1 (main), Footer-1, Header-Ads
+ *
+ * @return void
+ */
 function gni_widgets_init() {
     register_sidebar( array(
         'name'          => esc_html__( 'Sidebar', 'global-news-insights' ),
@@ -110,8 +129,14 @@ require get_template_directory() . '/inc/customizer.php';
 require get_template_directory() . '/inc/widgets.php';
 require get_template_directory() . '/inc/meta-boxes.php';
 require get_template_directory() . '/inc/template-tags.php';
+require get_template_directory() . '/inc/newsletter-admin.php';
 
-// Add meta tags for social sharing
+/**
+ * Emit Open Graph and Twitter Card meta tags for social sharing
+ * Improves article previews on Facebook, Twitter, WhatsApp, etc.
+ *
+ * @return void
+ */
 function gni_social_meta() {
     if ( is_singular() ) {
         global $post;
