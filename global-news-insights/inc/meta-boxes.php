@@ -8,22 +8,22 @@
 
 /**
  * Register meta boxes for post editing
- * Breaking News, Featured Post, Author Bio, Custom Meta
+ * Breaking News, Featured Post, Priority, Reading Time, etc.
  */
 function gni_register_meta_boxes() {
     add_meta_box(
-        'gni_breaking_news',
-        esc_html__( 'Breaking News Settings', 'global-news-insights' ),
-        'gni_breaking_news_callback',
+        'gni_news_controls',
+        '🎯 News Controls',
+        'gni_news_controls_callback',
         'post',
         'side',
         'high'
     );
 
     add_meta_box(
-        'gni_featured_post',
-        esc_html__( 'Featured Post', 'global-news-insights' ),
-        'gni_featured_post_callback',
+        'gni_article_priority',
+        '📊 Article Priority',
+        'gni_article_priority_callback',
         'post',
         'side',
         'high'
@@ -31,7 +31,7 @@ function gni_register_meta_boxes() {
 
     add_meta_box(
         'gni_post_views',
-        esc_html__( 'Post Views Counter', 'global-news-insights' ),
+        '👁️ Post Views & Analytics',
         'gni_post_views_callback',
         'post',
         'side',
@@ -39,9 +39,27 @@ function gni_register_meta_boxes() {
     );
 
     add_meta_box(
+        'gni_article_publishing',
+        '📢 Publishing Options',
+        'gni_article_publishing_callback',
+        'post',
+        'normal',
+        'high'
+    );
+
+    add_meta_box(
         'gni_article_settings',
-        esc_html__( 'Article Settings', 'global-news-insights' ),
+        '⚙️ Advanced Settings',
         'gni_article_settings_callback',
+        'post',
+        'normal',
+        'default'
+    );
+
+    add_meta_box(
+        'gni_article_seo',
+        '🔍 SEO & Metadata',
+        'gni_article_seo_callback',
         'post',
         'normal',
         'default'
@@ -57,11 +75,174 @@ function gni_breaking_news_callback( $post ) {
     wp_nonce_field( 'gni_breaking_nonce_action', 'gni_breaking_nonce' );
     $value = get_post_meta( $post->ID, '_gni_breaking', true );
     ?>
-    <label for="gni_breaking_toggle">
-        <input type="checkbox" id="gni_breaking_toggle" name="gni_breaking" value="1" <?php checked( $value, '1' ); ?> />
-        <?php esc_html_e( 'Mark as Breaking News', 'global-news-insights' ); ?>
-    </label>
-    <p class="description"><?php esc_html_e( 'This post will appear in the breaking news ticker.', 'global-news-insights' ); ?></p>
+    <div class="gni-meta-box-row">
+        <label for="gni_breaking_toggle">
+            <input type="checkbox" id="gni_breaking_toggle" name="gni_breaking" value="1" <?php checked( $value, '1' ); ?> />
+            <span style="margin-left: 8px;">🔴 <strong>Mark as Breaking News</strong></span>
+        </label>
+    </div>
+    <p class="description" style="margin: 10px 0 0 0;"><?php esc_html_e( 'This post will appear in the breaking news ticker and featured section.', 'global-news-insights' ); ?></p>
+    <?php
+}
+
+/**
+ * News Controls meta box callback
+ * Combined breaking news and featured post controls
+ */
+function gni_news_controls_callback( $post ) {
+    wp_nonce_field( 'gni_news_controls_nonce_action', 'gni_news_controls_nonce' );
+    
+    $breaking = get_post_meta( $post->ID, '_gni_breaking', true );
+    $featured = get_post_meta( $post->ID, '_gni_featured', true );
+    ?>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div class="gni-meta-box-row" style="background-color: rgba(220, 53, 69, 0.1); border-left: 3px solid #dc3545;">
+            <label for="gni_breaking_toggle" style="margin: 0; display: flex; align-items: center;">
+                <input type="checkbox" id="gni_breaking_toggle" name="gni_breaking" value="1" <?php checked( $breaking, '1' ); ?> style="margin: 0;" />
+                <span style="margin-left: 10px; font-weight: 600;">🔴 Breaking News</span>
+            </label>
+            <p class="description" style="margin: 5px 0 0 30px; font-size: 12px;"><?php esc_html_e( 'Appears in breaking news ticker', 'global-news-insights' ); ?></p>
+        </div>
+        
+        <div class="gni-meta-box-row" style="background-color: rgba(26, 115, 232, 0.1); border-left: 3px solid #1a73e8;">
+            <label for="gni_featured_toggle" style="margin: 0; display: flex; align-items: center;">
+                <input type="checkbox" id="gni_featured_toggle" name="gni_featured" value="1" <?php checked( $featured, '1' ); ?> style="margin: 0;" />
+                <span style="margin-left: 10px; font-weight: 600;">⭐ Featured Article</span>
+            </label>
+            <p class="description" style="margin: 5px 0 0 30px; font-size: 12px;"><?php esc_html_e( 'Highlighted on homepage', 'global-news-insights' ); ?></p>
+        </div>
+    </div>
+    <?php
+}
+
+/**
+ * Article Priority meta box callback
+ */
+function gni_article_priority_callback( $post ) {
+    wp_nonce_field( 'gni_priority_nonce_action', 'gni_priority_nonce' );
+    
+    $priority = get_post_meta( $post->ID, '_gni_priority', true ) ?: 'normal';
+    ?>
+    <div class="gni-meta-box">
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="radio" name="gni_priority" value="high" <?php checked( $priority, 'high' ); ?> />
+                <span style="margin-left: 8px;">🔴 <strong>High Priority</strong></span>
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="radio" name="gni_priority" value="normal" <?php checked( $priority, 'normal' ); ?> />
+                <span style="margin-left: 8px;">🟡 <strong>Normal Priority</strong></span>
+            </label>
+            <label style="display: flex; align-items: center; cursor: pointer;">
+                <input type="radio" name="gni_priority" value="low" <?php checked( $priority, 'low' ); ?> />
+                <span style="margin-left: 8px;">⚪ <strong>Low Priority</strong></span>
+            </label>
+        </div>
+        <p class="description" style="margin-top: 10px; font-size: 12px;"><?php esc_html_e( 'Controls article visibility and placement', 'global-news-insights' ); ?></p>
+    </div>
+    <?php
+}
+
+/**
+ * Article Publishing meta box callback
+ */
+function gni_article_publishing_callback( $post ) {
+    wp_nonce_field( 'gni_publishing_nonce_action', 'gni_publishing_nonce' );
+    
+    $publish_date = get_the_date( 'Y-m-d H:i', $post->ID );
+    $estimated_read_time = get_post_meta( $post->ID, '_gni_read_time', true ) ?: gni_get_reading_time( $post->ID );
+    ?>
+    <table class="form-table" style="background-color: var(--gni-dark-secondary); border-radius: 4px;">
+        <tr style="border-bottom: 1px solid var(--gni-border);">
+            <th scope="row" style="padding: 15px; width: 200px;">
+                <label for="publish_date">📅 Publication Date</label>
+            </th>
+            <td style="padding: 15px;">
+                <input type="datetime-local" id="publish_date" name="publish_date" value="<?php echo esc_attr( str_replace( ' ', 'T', $publish_date ) ); ?>" class="regular-text" />
+                <p class="description"><?php esc_html_e( 'When this article will be published', 'global-news-insights' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" style="padding: 15px;">
+                <label>⏱️ Reading Time</label>
+            </th>
+            <td style="padding: 15px;">
+                <div style="font-size: 18px; font-weight: bold; color: var(--gni-accent);">
+                    <?php echo intval( $estimated_read_time ); ?> minutes
+                </div>
+                <p class="description"><?php esc_html_e( 'Auto-calculated from article length', 'global-news-insights' ); ?></p>
+            </td>
+        </tr>
+    </table>
+    <?php
+}
+
+/**
+ * Post Views meta box callback
+ * Display view count and analytics
+ */
+function gni_post_views_callback( $post ) {
+    $views = (int) get_post_meta( $post->ID, '_gni_post_views', true );
+    $trending = gni_get_trending_posts( 100, 7 );
+    $post_position = 1;
+    
+    foreach ( $trending as $trend_post ) {
+        if ( $trend_post->ID === $post->ID ) {
+            break;
+        }
+        $post_position++;
+    }
+    ?>
+    <div style="text-align: center; padding: 20px;">
+        <div style="font-size: 36px; font-weight: bold; color: var(--gni-accent); margin-bottom: 10px;">
+            <?php echo intval( $views ); ?>
+        </div>
+        <p style="margin: 0; color: var(--gni-text-secondary);">Total Views</p>
+        
+        <hr style="margin: 15px 0; border-color: var(--gni-border);">
+        
+        <p style="margin: 10px 0; font-size: 14px;">
+            <strong>#<?php echo intval( $post_position ); ?></strong> in trending
+            <br>
+            <small style="color: var(--gni-text-secondary);">Last 7 days</small>
+        </p>
+    </div>
+    <?php
+}
+
+/**
+ * Article SEO meta box callback
+ */
+function gni_article_seo_callback( $post ) {
+    wp_nonce_field( 'gni_seo_nonce_action', 'gni_seo_nonce' );
+    
+    $seo_title = get_post_meta( $post->ID, '_gni_seo_title', true );
+    $seo_description = get_post_meta( $post->ID, '_gni_seo_description', true );
+    $seo_keywords = get_post_meta( $post->ID, '_gni_seo_keywords', true );
+    ?>
+    <table class="form-table">
+        <tr>
+            <th scope="row"><label for="gni_seo_title">🔍 SEO Title</label></th>
+            <td>
+                <input type="text" id="gni_seo_title" name="gni_seo_title" value="<?php echo esc_attr( $seo_title ); ?>" class="large-text" />
+                <p class="description"><?php esc_html_e( 'Optimal length: 50-60 characters', 'global-news-insights' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="gni_seo_description">📝 Meta Description</label></th>
+            <td>
+                <textarea id="gni_seo_description" name="gni_seo_description" rows="3" class="large-text"><?php echo esc_textarea( $seo_description ); ?></textarea>
+                <p class="description"><?php esc_html_e( 'Optimal length: 150-160 characters', 'global-news-insights' ); ?></p>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row"><label for="gni_seo_keywords">🏷️ Keywords</label></th>
+            <td>
+                <input type="text" id="gni_seo_keywords" name="gni_seo_keywords" value="<?php echo esc_attr( $seo_keywords ); ?>" class="large-text" placeholder="separated by comma" />
+                <p class="description"><?php esc_html_e( 'Main keywords for this article (comma separated)', 'global-news-insights' ); ?></p>
+            </td>
+        </tr>
+    </table>
     <?php
 }
 

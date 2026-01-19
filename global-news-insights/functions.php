@@ -162,6 +162,13 @@ require get_template_directory() . '/inc/meta-boxes.php';
 require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/newsletter-admin.php';
 
+// Admin dashboard and management features
+require get_template_directory() . '/inc/admin-dashboard.php';
+require get_template_directory() . '/inc/admin-content-manager.php';
+require get_template_directory() . '/inc/admin-users.php';
+require get_template_directory() . '/inc/admin-comments.php';
+require get_template_directory() . '/inc/admin-website-controls.php';
+
 /**
  * Emit Open Graph and Twitter Card meta tags for social sharing
  * Improves article previews on Facebook, Twitter, WhatsApp, etc.
